@@ -1,5 +1,3 @@
-set -g _fnm_current_node_version_file
-
 function _fnm_find_node_version_file -a path --description 'Find node version file in path'
     for filename in $argv
         if test -f "$path/$filename"
@@ -45,6 +43,9 @@ function fnm_use --description 'Change node version'
             fnm use --silent-if-unchanged &&
                 set -g _fnm_current_node_version_file $node_version_file $mod_time
         end
+    else if set -q _fnm_current_node_version_file[1]
+        fnm use --silent-if-unchanged system
+        set -e _fnm_current_node_version_file
     end
 end
 
