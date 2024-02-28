@@ -1,6 +1,6 @@
 set -g _fnm_current_node_version_file
 
-function _fnm_find_node_version_file -a path --description 'Find node version file in current directory'
+function _fnm_find_node_version_file -a path --description 'Find node version file in path'
     for filename in $argv
         if test -f "$path/$filename"
             echo "$path/$filename"
@@ -22,11 +22,13 @@ function _fnm_find_node_version_file_up -a path --description 'Find node version
 end
 
 function fnm_use --description 'Change node version'
+    # do not run if fnm is not loaded, or we're in a command substitution
     test -z "$FNM_MULTISHELL_PATH" || status --is-command-substitution; and return 0
 
     set -g node_version_files .nvmrc .node_version
     test "$FNM_RESOLVE_ENGINES" = true; and set -p node_version_files package.json
 
+    # check for node version files
     set -l node_version_file
     if test "$FNM_VERSION_FILE_STRATEGY" = local
         set node_version_file (_fnm_find_node_version_file $PWD $node_version_files)
@@ -36,6 +38,7 @@ function fnm_use --description 'Change node version'
 
     if set -q node_version_file[1]
         set -l mod_time (path mtime $node_version_file)
+        # check if the found version file is different or newer than the one that is loaded
         if ! set -q _fnm_current_node_version_file[1] ||
                 test "$_fnm_last_node_version_file[1]" != "$node_version_file" ||
                 test $mod_time -gt $$_fnm_current_node_version_file[2]
