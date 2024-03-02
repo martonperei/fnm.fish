@@ -23,7 +23,7 @@ function fnm_use --description 'Change node version'
     # do not run if fnm is not loaded, or we're in a command substitution
     test -z "$FNM_MULTISHELL_PATH" || status --is-command-substitution; and return 0
 
-    set -g node_version_files .nvmrc .node_version
+    set -l node_version_files .nvmrc .node_version
     test "$FNM_RESOLVE_ENGINES" = true; and set -p node_version_files package.json
 
     # check for node version files
@@ -44,6 +44,7 @@ function fnm_use --description 'Change node version'
                 set -g _fnm_current_node_version_file $node_version_file $mod_time
         end
     else if set -q _fnm_current_node_version_file[1]
+        # restore system node if no version files are found
         fnm use --silent-if-unchanged system
         set -e _fnm_current_node_version_file
     end
