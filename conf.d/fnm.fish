@@ -11,7 +11,7 @@ function fnm_use --description 'Change node version'
 
     if test "$FNM_VERSION_FILE_STRATEGY" = "recursive"
         while test -n "$search_dir"
-            for file in $candidates
+            for file in $_fnm_candidate_files
                 if test -f "$search_dir/$file"
                     set found_file "$search_dir/$file"
                     break
@@ -29,7 +29,7 @@ function fnm_use --description 'Change node version'
             set search_dir (path dirname "$search_dir")
         end
     else
-        for file in $candidates
+        for file in $_fnm_candidate_files
             if test -f "$search_dir/$file"
                 set found_file "$search_dir/$file"
                 break
